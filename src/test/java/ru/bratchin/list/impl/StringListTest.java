@@ -1,6 +1,9 @@
 package ru.bratchin.list.impl;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import ru.bratchin.list.exception.IndexIncorrectException;
@@ -12,9 +15,9 @@ import java.util.NoSuchElementException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-class StringListImplTest {
+class StringListTest {
 
-    private StringListImpl stringList;
+    private StringList stringList;
 
     private static Field fieldArr;
 
@@ -23,9 +26,9 @@ class StringListImplTest {
 
     @BeforeAll
     public static void setup() throws NoSuchFieldException {
-        fieldArr = StringListImpl.class.getDeclaredField("arr");
+        fieldArr = StringList.class.getDeclaredField("arr");
         fieldArr.setAccessible(true);
-        fieldSize = StringListImpl.class.getDeclaredField("size");
+        fieldSize = StringList.class.getDeclaredField("size");
         fieldSize.setAccessible(true);
     }
 
@@ -33,7 +36,7 @@ class StringListImplTest {
     class Error {
         @Test
         void create() {
-            Throwable thrown = catchThrowable(() -> new StringListImpl(-1));
+            Throwable thrown = catchThrowable(() -> new StringList(-1));
 
             assertThat(thrown).isInstanceOf(IndexIncorrectException.class);
         }
@@ -49,7 +52,7 @@ class StringListImplTest {
                     }
             )
             void add(int index){
-                stringList = new StringListImpl(0);
+                stringList = new StringList(0);
 
                 Throwable thrown = catchThrowable(() -> stringList.add(index, "test"));
 
@@ -64,7 +67,7 @@ class StringListImplTest {
                 }
             )
             void set(int index){
-                stringList = new StringListImpl(
+                stringList = new StringList(
                         new String[]{
                                 "1", "3", "3", "4"
                         }
@@ -77,7 +80,7 @@ class StringListImplTest {
 
             @Test
             void remove(){
-                stringList = new StringListImpl(
+                stringList = new StringList(
                         new String[]{
                                 "1", "3", "3", "4"
                         }
@@ -90,7 +93,7 @@ class StringListImplTest {
 
             @Test
             void get(){
-                stringList = new StringListImpl(
+                stringList = new StringList(
                         new String[]{
                                 "1", "3", "3", "4"
                         }
@@ -108,7 +111,7 @@ class StringListImplTest {
 
             @BeforeEach
             public void initEach() {
-                stringList = new StringListImpl(
+                stringList = new StringList(
                         new String[]{
                                 "1", "3", "3", "4"
                         }
@@ -160,7 +163,7 @@ class StringListImplTest {
 
         @Test
         void remove(){
-            stringList = new StringListImpl(
+            stringList = new StringList(
                     new String[]{
                             "1", "3", "3", "4"
                     }
@@ -181,7 +184,7 @@ class StringListImplTest {
 
             @BeforeEach
             public void initEach() throws IllegalAccessException {
-                stringList = new StringListImpl(0);
+                stringList = new StringList(0);
                 fieldArr.set(stringList, new String[]{
                         "1", "3", "3", "4"
                 });
@@ -203,7 +206,7 @@ class StringListImplTest {
         class ListIsNotEmpty {
             @BeforeEach
             public void initEach() {
-                stringList = new StringListImpl(
+                stringList = new StringList(
                         new String[]{
                                 "1", "3", "3", "4"
                         }
@@ -213,7 +216,7 @@ class StringListImplTest {
             @Test
             void equalsTrue() {
                 boolean contains = stringList.equals(
-                        new StringListImpl(
+                        new StringList(
                                 new String[]{
                                         "1", "3", "3", "4"
                                 }
@@ -226,7 +229,7 @@ class StringListImplTest {
             @Test
             void equalsFalse() {
                 boolean contains = stringList.equals(
-                        new StringListImpl(
+                        new StringList(
                                 new String[]{
                                         "1", "3", "3"
                                 }
@@ -379,13 +382,13 @@ class StringListImplTest {
         class ListIsEmpty {
             @BeforeEach
             public void initEach() {
-                stringList = new StringListImpl(0);
+                stringList = new StringList(0);
             }
 
             @Test
             void equalsTrue() {
                 boolean contains = stringList.equals(
-                        new StringListImpl(0)
+                        new StringList(0)
                 );
 
                 assertThat(contains).isTrue();
@@ -394,7 +397,7 @@ class StringListImplTest {
             @Test
             void equalsFalse() {
                 boolean contains = stringList.equals(
-                        new StringListImpl(
+                        new StringList(
                                 new String[]{
                                         "1", "3", "3"
                                 }
@@ -435,7 +438,7 @@ class StringListImplTest {
 
         @Test
         void createEmpty() throws IllegalAccessException {
-            StringListImpl stringList = new StringListImpl(0);
+            StringList stringList = new StringList(0);
 
             assertThat(stringList.isEmpty()).isTrue();
             var arr = (String[]) fieldArr.get(stringList);
