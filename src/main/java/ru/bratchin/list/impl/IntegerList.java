@@ -1,6 +1,7 @@
 package ru.bratchin.list.impl;
 
-import ru.bratchin.list.api.StringList;
+import ru.bratchin.list.api.MyList;
+import ru.bratchin.list.api.NumberList;
 import ru.bratchin.list.exception.IndexIncorrectException;
 import ru.bratchin.list.exception.IndexOutsideTheArrayException;
 import ru.bratchin.list.exception.MyIllegalArgumentException;
@@ -9,29 +10,29 @@ import ru.bratchin.list.exception.MyNoSuchElementException;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class StringListImpl implements StringList {
+public class IntegerList extends NumberList<Integer> {
 
-    private String[] arr;
+    private Integer[] arr;
 
     private int size = 0;
 
-    public StringListImpl(int length) {
+    public IntegerList(int length) {
         if (length < 0) {
             throw new IndexIncorrectException();
         }
-        arr = new String[length];
+        arr = new Integer[length];
     }
 
-    public StringListImpl(String[] arr) {
+    public IntegerList(Integer[] arr) {
         this.size = arr.length;
-        this.arr = new String[arr.length * 2];
+        this.arr = new Integer[arr.length * 2];
         System.arraycopy(arr, 0, this.arr, 0, arr.length);
     }
 
-    public String add(String item) {
+    public Integer add(Integer item) {
         checkItem(item);
         if (arr.length == 0) {
-            arr = new String[1];
+            arr = new Integer[1];
             arr[0] = item;
             size++;
             return arr[0];
@@ -39,16 +40,16 @@ public class StringListImpl implements StringList {
         return addToArray(size, item);
     }
 
-    public String add(int index, String item) {
+    public Integer add(int index, Integer item) {
         checkIndex(index);
         checkItem(item);
         return addToArray(index, item);
     }
 
-    private String addToArray(int index, String item) {
-        String[] newArr = new String[arr.length];
+    private Integer addToArray(int index, Integer item) {
+        Integer[] newArr = new Integer[arr.length];
         if (size + 1 > arr.length) {
-            newArr = new String[arr.length * 2];
+            newArr = new Integer[arr.length * 2];
         }
         System.arraycopy(arr, 0, newArr, 0, index);
         newArr[index] = item;
@@ -58,7 +59,7 @@ public class StringListImpl implements StringList {
         return arr[index];
     }
 
-    public String set(int index, String item) {
+    public Integer set(int index, Integer item) {
         checkIndex(index);
         checkItem(item);
 
@@ -66,7 +67,7 @@ public class StringListImpl implements StringList {
         return arr[index];
     }
 
-    public String remove(String item) {
+    public Integer remove(Integer item) {
         checkItem(item);
         int index = indexOf(item);
         if (index == -1) {
@@ -75,26 +76,40 @@ public class StringListImpl implements StringList {
         return remove(index);
     }
 
-    public String remove(int index) {
+    public Integer remove(int index) {
         index++;
         checkIndex(index);
-        String tmp = arr[index - 1];
+        Integer tmp = arr[index - 1];
         System.arraycopy(arr, index, arr, index - 1, arr.length - size);
         size--;
         return tmp;
     }
 
-    public boolean contains(String item) {
-        checkItem(item);
-        for (int i = 0; i < size; i++) {
-            if (item.equals(arr[i])) {
+    public boolean contains(Integer element) {
+        int min = 0;
+        int max = size - 1;
+
+
+        while (min <= max) {
+            int mid = (min + max) / 2;
+
+
+            if (element.equals(arr[mid])) {
                 return true;
+            }
+
+
+            if (element < arr[mid]) {
+                max = mid - 1;
+            } else {
+                min = mid + 1;
             }
         }
         return false;
     }
 
-    public int indexOf(String item) {
+
+    public int indexOf(Integer item) {
         checkItem(item);
         for (int i = 0; i < size; i++) {
             if (item.equals(arr[i])) {
@@ -104,7 +119,7 @@ public class StringListImpl implements StringList {
         return -1;
     }
 
-    public int lastIndexOf(String item) {
+    public int lastIndexOf(Integer item) {
         checkItem(item);
         for (int i = size - 1; i >= 0; i--) {
             if (item.equals(arr[i])) {
@@ -114,13 +129,13 @@ public class StringListImpl implements StringList {
         return -1;
     }
 
-    public String get(int index) {
+    public Integer get(int index) {
         checkIndex(index);
         return arr[index];
     }
 
     @Override
-    public boolean equals(StringList otherList) {
+    public boolean equals(MyList otherList) {
         return Arrays.equals(otherList.toArray(), this.toArray());
     }
 
@@ -133,12 +148,12 @@ public class StringListImpl implements StringList {
     }
 
     public void clear() {
-        arr = new String[1];
+        arr = new Integer[1];
         size = 0;
     }
 
-    public String[] toArray() {
-        String[] newArr = new String[size];
+    public Integer[] toArray() {
+        Integer[] newArr = new Integer[size];
         System.arraycopy(arr, 0, newArr, 0, size);
         return newArr;
     }
@@ -149,8 +164,48 @@ public class StringListImpl implements StringList {
         }
     }
 
-    private void checkItem(String item) {
+    private void checkItem(Integer item) {
         Optional.ofNullable(item).orElseThrow(MyIllegalArgumentException::new);
+    }
+
+    @Override
+    public Integer[] sort() {
+        sortSelection(arr);
+        return arr;
+    }
+
+    public void sortBubble(Integer[] arr) {
+        for (int i = 0; i < size - 1; i++) {
+            for (int j = 0; j < size - 1 - i; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    swapElements(arr, j, j + 1);
+                }
+            }
+        }
+    }
+
+    public void sortInsertion(Integer[] arr) {
+        for (int i = 1; i < size; i++) {
+            int temp = arr[i];
+            int j = i;
+            while (j > 0 && arr[j - 1] >= temp) {
+                arr[j] = arr[j - 1];
+                j--;
+            }
+            arr[j] = temp;
+        }
+    }
+
+    public void sortSelection(Integer[] arr) {
+        for (int i = 0; i < size - 1; i++) {
+            int minElementIndex = i;
+            for (int j = i + 1; j < size; j++) {
+                if (arr[j] < arr[minElementIndex]) {
+                    minElementIndex = j;
+                }
+            }
+            swapElements(arr, i, minElementIndex);
+        }
     }
 
 }
