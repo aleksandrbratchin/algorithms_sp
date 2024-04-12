@@ -48,7 +48,7 @@ public class StringList implements MyList<String> {
     private String addToArray(int index, String item) {
         String[] newArr = new String[arr.length];
         if (size + 1 > arr.length) {
-            newArr = new String[arr.length * 2];
+            newArr = grow(newArr);
         }
         System.arraycopy(arr, 0, newArr, 0, index);
         newArr[index] = item;
@@ -56,6 +56,10 @@ public class StringList implements MyList<String> {
         arr = newArr;
         size++;
         return arr[index];
+    }
+
+    private String[] grow(String[] newArr) {
+        return new String[(int) (arr.length * 1.5)];
     }
 
     public String set(int index, String item) {
